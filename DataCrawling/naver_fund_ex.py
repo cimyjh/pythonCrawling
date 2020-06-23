@@ -16,15 +16,8 @@ for i in range(1, 130):
     url = url + str(i)
     soup = BeautifulSoup(requests.get(url).text, 'html.parser')
 
-    # links = soup.find_all("a")
-    # for a in links:
-    #     href = a.attrs['href']
-    #     text = a.string
-    #     print(text, " > ", href)
-
     funds = soup.find_all('td', class_='text')
     for fund in funds:
-
         fund_name = fund.find('a', target='_top').string
         fund_setAmount = fund.find('strong').string
         print(i)
