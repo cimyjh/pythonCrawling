@@ -1,8 +1,19 @@
 import urllib
+import pymysql
 import requests
+import time
 from bs4 import BeautifulSoup
 from requests_file import FileAdapter
+from traceback import format_exc
 
+
+db = pymysql.connect("", "", "", "", charset='utf8mb4')
+cursor = db.cursor()
+
+
+
+
+fund_num = []
 fund_name = []
 fund_type = []
 fund_startDate = []
@@ -14,26 +25,30 @@ fund_scaleOperation = []
 fund_cellAreaTxtR = []
 
 
-
-
 url = 'http://www.funddoctor.co.kr/afn/topfund/fundrate1.jsp?page='
 
-for pages in range(1, 3):
+for pages in range(56, 57):
     url = url + str(pages)
     soup = BeautifulSoup(requests.get(url).text, 'html.parser')
+    # time.sleep(100)
     print(url)
     print(soup)
 
     funds = soup.find_all('div', class_='table-list-ty3')
 
-    j = 0
+    pagesInNum = 0
     for fund in funds:
+        mariaData = []
+        pagesInNum = pagesInNum + 1
 
-        j = j + 1
-        fund_name = fund.find('a').string
-        fund_name = fund_name.strip()
+        fund_num = fund.find('div', id="morechk").string
+
+        fund_name = fund.find('div', class_="inputChk")
+        fund_name = str(fund_name)
+        fund_name = fund_name.split('title=')[1].split(' 선택')[0][1:]
 
         fund_3y = fund.find('div', class_='mw_ty1').get_text()
+        fund_3y = fund_3y.split('(')[0]
 
         fund_cellArea = fund.find_all('div', class_='cell-area')
         fund_cellArea = fund_cellArea[1].get_text()
@@ -46,24 +61,34 @@ for pages in range(1, 3):
         fund_cellAreaTxtR = fund.find_all('div', class_='cell-area-txtR')
         fund_cellAreaTxtR = fund_cellAreaTxtR[0].get_text()
         fund_cellAreaTxtR = fund_cellAreaTxtR.split('.')
-        fund_assets = fund_cellAreaTxtR[0]
-        fund_scaleOperation = fund_cellAreaTxtR[1][1:]
+        fund_assets = fund_cellAreaTxtR[0].replace(',', '')
+        fund_scaleOperation = fund_cellAreaTxtR[1][1:].replace(',', '')
 
 
 
+        print(" ")
+        print(pages, '페이지의 글이며 ', pagesInNum, '번째 글 입니다.')
+        print('펀드 고유번호:', fund_num)
+        print('펀드 이름:', fund_name)
+        print('펀드 3년 수익률:', fund_3y)
+        print('펀드 소유형:', fund_type)
+        print('펀드 설정일:', fund_startDate)
 
+        print('펀드 순자산액:', fund_assets)
+        print('펀드 운용규모:', fund_scaleOperation)
 
+        try:
+            mariaData.append((fund_num, fund_name, fund_type, fund_startDate, fund_3y, fund_assets, fund_scaleOperation))
+        except IndexError:
+            print(format_exc())
 
-        # fund_setAmount = fund.find('strong').string
-
-        print(pages, '페이지의 글이며 ', j, '번째 글 입니다.')
-        print(fund_name)
-        print(fund_3y)
-        print(fund_type)
-        print(fund_startDate)
-
-        print(fund_assets)
-        print(fund_scaleOperation)
+        print(mariaData)
+        query = """insert into koreaFunds(fund_num, fund_name, fund_type, fund_startDate, fund_3y, fund_assets, fund_scaleOperation) values (%s, %s, %s, %s, %s, %s, %s)"""
+        cursor.executemany(query, tuple(mariaData))
+        db.commit()
+        print('MariaDB에 insert 완료')
         print("-----------------------------------------------")
+        time.sleep(1)
+    # time.sleep(100)
 
 print('End')
