@@ -7,7 +7,7 @@ from requests_file import FileAdapter
 from traceback import format_exc
 
 
-db = pymysql.connect("host", "root", "passwd", "schema", charset='utf8mb4')
+db = pymysql.connect("", "", "", "", charset='utf8mb4')
 cursor = db.cursor()
 
 
@@ -27,10 +27,10 @@ fund_cellAreaTxtR = []
 
 url = 'http://www.funddoctor.co.kr/afn/topfund/fundrate1.jsp?page='
 
-for pages in range(1, 2):
+for pages in range(56, 57):
     url = url + str(pages)
     soup = BeautifulSoup(requests.get(url).text, 'html.parser')
-    time.sleep(5)
+    # time.sleep(100)
     print(url)
     print(soup)
 
@@ -48,7 +48,7 @@ for pages in range(1, 2):
         fund_name = fund_name.split('title=')[1].split(' 선택')[0][1:]
 
         fund_3y = fund.find('div', class_='mw_ty1').get_text()
-        fund_3y = fund_3y.split('(')[0] + '%'
+        fund_3y = fund_3y.split('(')[0]
 
         fund_cellArea = fund.find_all('div', class_='cell-area')
         fund_cellArea = fund_cellArea[1].get_text()
@@ -61,8 +61,8 @@ for pages in range(1, 2):
         fund_cellAreaTxtR = fund.find_all('div', class_='cell-area-txtR')
         fund_cellAreaTxtR = fund_cellAreaTxtR[0].get_text()
         fund_cellAreaTxtR = fund_cellAreaTxtR.split('.')
-        fund_assets = fund_cellAreaTxtR[0]
-        fund_scaleOperation = fund_cellAreaTxtR[1][1:]
+        fund_assets = fund_cellAreaTxtR[0].replace(',', '')
+        fund_scaleOperation = fund_cellAreaTxtR[1][1:].replace(',', '')
 
 
 
@@ -83,11 +83,12 @@ for pages in range(1, 2):
             print(format_exc())
 
         print(mariaData)
-        query = """insert into funds(fund_num, fund_name, fund_type, fund_startDate, fund_3y, fund_assets, fund_scaleOperation) values (%s, %s, %s, %s, %s, %s, %s)"""
+        query = """insert into koreaFunds(fund_num, fund_name, fund_type, fund_startDate, fund_3y, fund_assets, fund_scaleOperation) values (%s, %s, %s, %s, %s, %s, %s)"""
         cursor.executemany(query, tuple(mariaData))
         db.commit()
+        print('MariaDB에 insert 완료')
         print("-----------------------------------------------")
-        time.sleep(10)
-    time.sleep(15)
+        time.sleep(1)
+    # time.sleep(100)
 
 print('End')
