@@ -7,12 +7,6 @@ from requests_file import FileAdapter
 from traceback import format_exc
 
 
-db = pymysql.connect("", "", "", "", charset='utf8mb4')
-cursor = db.cursor()
-
-
-
-
 fund_num = []
 fund_name = []
 fund_type = []
@@ -25,14 +19,12 @@ fund_scaleOperation = []
 fund_cellAreaTxtR = []
 
 
-url = 'http://www.funddoctor.co.kr/afn/topfund/fundrate1.jsp?page='
-
-for pages in range(56, 57):
+for pages in range(1, 57):
+    url = 'http://www.funddoctor.co.kr/afn/topfund/fundrate1.jsp?page='
     url = url + str(pages)
     soup = BeautifulSoup(requests.get(url).text, 'html.parser')
-    # time.sleep(100)
+    # time.sleep(30)
     print(url)
-    print(soup)
 
     funds = soup.find_all('div', class_='table-list-ty3')
 
@@ -65,7 +57,6 @@ for pages in range(56, 57):
         fund_scaleOperation = fund_cellAreaTxtR[1][1:].replace(',', '')
 
 
-
         print(" ")
         print(pages, '페이지의 글이며 ', pagesInNum, '번째 글 입니다.')
         print('펀드 고유번호:', fund_num)
@@ -83,12 +74,10 @@ for pages in range(56, 57):
             print(format_exc())
 
         print(mariaData)
-        query = """insert into koreaFunds(fund_num, fund_name, fund_type, fund_startDate, fund_3y, fund_assets, fund_scaleOperation) values (%s, %s, %s, %s, %s, %s, %s)"""
-        cursor.executemany(query, tuple(mariaData))
-        db.commit()
-        print('MariaDB에 insert 완료')
+
         print("-----------------------------------------------")
         time.sleep(1)
-    # time.sleep(100)
+
+    time.sleep(10)
 
 print('End')

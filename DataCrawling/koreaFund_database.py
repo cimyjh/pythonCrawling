@@ -11,8 +11,6 @@ db = pymysql.connect("", "", "", "", charset='utf8mb4')
 cursor = db.cursor()
 
 
-
-
 fund_num = []
 fund_name = []
 fund_type = []
@@ -25,9 +23,8 @@ fund_scaleOperation = []
 fund_cellAreaTxtR = []
 
 
-url = 'http://www.funddoctor.co.kr/afn/topfund/fundrate1.jsp?page='
-
-for pages in range(56, 57):
+for pages in range(1, 57):
+    url = 'http://www.funddoctor.co.kr/afn/topfund/fundrate1.jsp?page='
     url = url + str(pages)
     soup = BeautifulSoup(requests.get(url).text, 'html.parser')
     # time.sleep(100)

@@ -7,8 +7,8 @@ from requests_file import FileAdapter
 from traceback import format_exc
 
 
-#db = pymysql.connect("", "", "", "", charset='utf8mb4')
-#cursor = db.cursor()
+db = pymysql.connect("", "", "", "", charset='utf8mb4')
+cursor = db.cursor()
 
 
 etf_num = []
