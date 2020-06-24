@@ -17,6 +17,7 @@ for i in range(1, 130):
     soup = BeautifulSoup(requests.get(url).text, 'html.parser')
 
     funds = soup.find_all('td', class_='text')
+    print(funds)
     for fund in funds:
         fund_name = fund.find('a', target='_top').string
         fund_setAmount = fund.find('strong').string

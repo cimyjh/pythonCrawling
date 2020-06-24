@@ -7,7 +7,10 @@ fund_name = []
 fund_setAmount = []
 fund_href = []
 fund_titleName = []
-# fund_1m = []
+fund_1my = []
+fund_3my = []
+fund_12 = []
+
 
 
 url = 'https://finance.naver.com/fund/fundList.nhn?search=AIN&sortOrder=m1&page='
@@ -36,5 +39,9 @@ for i in range(1, 130):
             print(fund_titleName)
 
         print("-----------------------------------------------")
+
+    fyields = soup.find_all('td', class_='up')
+    for fyield in fyields:
+        print(i)
 
 print('End')
