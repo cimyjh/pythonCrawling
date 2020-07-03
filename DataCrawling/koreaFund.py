@@ -19,7 +19,7 @@ fund_scaleOperation = []
 fund_cellAreaTxtR = []
 
 
-for pages in range(1, 57):
+for pages in range(16, 57):
     url = 'http://www.funddoctor.co.kr/afn/topfund/fundrate1.jsp?page='
     url = url + str(pages)
     soup = BeautifulSoup(requests.get(url).text, 'html.parser')
@@ -44,8 +44,20 @@ for pages in range(1, 57):
 
         fund_cellArea = fund.find_all('div', class_='cell-area')
         fund_cellArea = fund_cellArea[1].get_text()
-        fund_cellArea = fund_cellArea.split('20')
+
+        print(fund_cellArea)
+
+        if '19' in fund_cellArea:
+            fund_cellArea = fund_cellArea.split('19')
+        else:
+            fund_cellArea = fund_cellArea.split('20')
+
+
+        print(fund_cellArea)
+
+
         fund_type = fund_cellArea[0]
+
         fund_startDate = fund_cellArea[1].split('.')
         fund_startDate = '/'.join(fund_startDate[0:2])
         fund_startDate = '20' + fund_startDate
@@ -76,8 +88,8 @@ for pages in range(1, 57):
         print(mariaData)
 
         print("-----------------------------------------------")
-        time.sleep(1)
+        #time.sleep(1)
 
-    time.sleep(10)
+    time.sleep(3)
 
 print('End')

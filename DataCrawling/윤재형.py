@@ -3,6 +3,7 @@
 # 프로그램의 목적: 네이버 스포츠에서 현재 KBO 순위를 웹 크롤링하는 것
 # 작성일: 2020년 7월 1일
 #
+import random
 
 import requests
 import time
